@@ -6,7 +6,7 @@ function FaceRecognition({ box, imageURL }) {
     return (
         <div className="center ma">
             <div className="absolute mt2">
-                {imageURL !== "" && <img id="inputimage" alt="test" src={imageURL} width="600px" height="auto" />}
+                {imageURL !== "" && <img id="inputimage" alt="test" src={imageURL} width="550px" height="auto" />}
                 {box.map((b, index) => (
                     <div
                         key={index}
