@@ -2,11 +2,23 @@ import React from "react";
 import "./FaceRecognition.css";
 
 function FaceRecognition({ box, imageURL }) {
+    console.log(box);
     return (
         <div className="center ma">
             <div className="absolute mt2">
-                {imageURL !== "" && <img id="inputimage" alt="test" src={imageURL} width="500px" height="auto" />}
-                <div className="bounding-box" style={{ top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol }}></div>
+                {imageURL !== "" && <img id="inputimage" alt="test" src={imageURL} width="600px" height="auto" />}
+                {box.map((b, index) => (
+                    <div
+                        key={index}
+                        className="bounding-box"
+                        style={{
+                            top: b.topRow,
+                            right: b.rightCol,
+                            bottom: b.bottomRow,
+                            left: b.leftCol,
+                        }}
+                    ></div>
+                ))}
             </div>
         </div>
     );

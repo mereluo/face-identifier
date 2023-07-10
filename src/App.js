@@ -12,7 +12,7 @@ import "./App.css";
 const initialState = {
     input: "",
     imageURL: "",
-    box: {},
+    box: [],
     route: "signin",
     isSignedIn: false,
     user: {
@@ -43,23 +43,19 @@ class App extends Component {
     };
 
     calculateFaceLocation = (data) => {
-        // console.log(data);
-        // console.log(data.outputs[0].data.regions[0].region_info.bounding_box);
-        const face = data.outputs[0].data.regions[0].region_info.bounding_box;
-        const image = document.getElementById("inputimage");
-        const width = Number(image.width);
-        const height = Number(image.height);
-        return {
-            leftCol: face.left_col * width,
-            topRow: face.top_row * height,
-            rightCol: width - face.right_col * width,
-            bottomRow: height - face.bottom_row * height,
-        };
-    };
-
-    displayFaceBox = (box) => {
-        // console.log(box);
-        this.setState({ box: box });
+        for (let i = 0; i < data.outputs[0].data.regions.length; i++) {
+            const face = data.outputs[0].data.regions[i].region_info.bounding_box;
+            const image = document.getElementById("inputimage");
+            const width = Number(image.width);
+            const height = Number(image.height);
+            const singleBox = {
+                leftCol: face.left_col * width,
+                topRow: face.top_row * height,
+                rightCol: width - face.right_col * width,
+                bottomRow: height - face.bottom_row * height,
+            };
+            this.state.box.push(singleBox);
+        }
     };
 
     onInputChange = (event) => {
@@ -68,6 +64,7 @@ class App extends Component {
 
     onButtonSubmit = () => {
         console.log("click");
+        this.setState({ box: [] });
         this.setState({ imageURL: this.state.input }, () => {
             fetch("https://face-identifier-api.onrender.com/imageurl", {
                 method: "post",
@@ -92,7 +89,7 @@ class App extends Component {
                             })
                             .catch(console.log);
                     }
-                    this.displayFaceBox(this.calculateFaceLocation(response));
+                    this.calculateFaceLocation(response);
                 })
                 .catch((error) => console.log("error", error));
         });
