@@ -15,6 +15,7 @@ const initialState = {
     box: [],
     route: "signin",
     isSignedIn: false,
+    faces: 0,
     user: {
         id: "",
         name: "",
@@ -43,7 +44,9 @@ class App extends Component {
     };
 
     calculateFaceLocation = (data) => {
-        for (let i = 0; i < data.outputs[0].data.regions.length; i++) {
+        const numFaces = data.outputs[0].data.regions.length;
+        this.setState({ faces: numFaces });
+        for (let i = 0; i < numFaces; i++) {
             const face = data.outputs[0].data.regions[i].region_info.bounding_box;
             const image = document.getElementById("inputimage");
             const width = Number(image.width);
@@ -56,6 +59,7 @@ class App extends Component {
             };
             this.state.box.push(singleBox);
         }
+        console.log("Faces: " + this.state.faces + "num: " + numFaces);
     };
 
     onInputChange = (event) => {
@@ -66,7 +70,9 @@ class App extends Component {
         console.log("click");
         this.setState({ box: [] });
         this.setState({ imageURL: this.state.input }, () => {
-            fetch("https://face-identifier-api.onrender.com/imageurl", {
+            // http://localhost:8080/
+            // https://face-identifier-api.onrender.com/
+            fetch("http://localhost:8080/imageurl", {
                 method: "post",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -76,11 +82,12 @@ class App extends Component {
                 .then((response) => response.json())
                 .then((response) => {
                     if (response) {
-                        fetch("https://face-identifier-api.onrender.com/image", {
+                        fetch("http://localhost:8080/image", {
                             method: "put",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 id: this.state.user.id,
+                                numFaces: this.state.faces,
                             }),
                         })
                             .then((response) => response.json())
